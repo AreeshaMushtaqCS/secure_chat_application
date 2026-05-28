@@ -172,3 +172,78 @@ Suggested roadmap
 - **Scalability notes**: For larger scale, consider splitting responsibilities (stateless server + Redis/ broker for pub/sub), sharding rooms, and offloading attachments to object storage.
 
 - If you want, I can also add a short "Implementation notes" section with recommended libraries, code snippets, and example API schemas for the highest-priority items.
+
+**Implementation Notes & Examples**
+
+- **Recommended Python libraries**
+  - `cryptography` — symmetric encryption primitives, X25519, and high-level Fernet if desired.
+  - `argon2-cffi` or `bcrypt` — password/passphrase hashing and KDF helpers (Argon2 preferred for KDF workloads).
+  - `pynacl` (PyNaCl) or `cryptography` X25519/ECDH primitives — authenticated key agreement for per-room keys.
+  - `aiohttp`, `websockets`, or `FastAPI` + `uvicorn` — for async servers and WebSocket support (choose based on desired API style).
+  - `pytest` and `pytest-asyncio` — unit and async integration tests.
+
+- **Key derivation & exchange (high-level example)**
+  - Derive keys from a passphrase using Argon2 (client-side) with a random per-room salt stored with the room metadata (salt is not secret). Use the derived seed to create a Fernet key or a symmetric AEAD key.
+  - For better security, perform an authenticated X25519 key agreement between clients (or between each client and a room manager) so the symmetric key is never derived from a public room id.
+
+- **Example DB schema (SQLite)**
+  - `rooms` table: `id TEXT PRIMARY KEY, name TEXT, salt BLOB, owner_id TEXT, created_at INTEGER, expires_at INTEGER NULLABLE`
+  - `messages` table: `id INTEGER PRIMARY KEY AUTOINCREMENT, room_id TEXT, sender_id TEXT, ts INTEGER, metadata JSON, ciphertext BLOB, attachment_ref TEXT NULL`
+  - Indexes: `CREATE INDEX idx_messages_room_ts ON messages(room_id, ts DESC)` for fast history queries.
+
+- **Socket / API command examples (JSON-over-TCP or WebSocket messages)**
+  - Create room: `{"cmd":"create_room","name":"My Room","salt":"BASE64","token":"..."}`
+  - Join room: `{"cmd":"join","room_id":"...","token":"...","client_pub":"BASE64"}` (client_pub used for key agreement)
+  - Send message: `{"cmd":"message","room_id":"...","payload":"BASE64_CIPHERTEXT","metadata":{...}}`
+  - Typing: `{"cmd":"typing","room_id":"...","state":true}` (ephemeral)
+  - History request: `{"cmd":"history","room_id":"...","cursor":"CURSOR_OR_TS","limit":50}` → server responds with `messages: [...]` and next cursor.
+  - Receipt / edit / delete events use dedicated `cmd` values (e.g., `receipt`, `edit`, `delete`) and reference the target `message_id`.
+
+- **Pagination pattern**
+  - Use cursor-based pagination (cursor = timestamp or message id). Server returns a page of messages plus `next_cursor` so clients can load older messages with `cursor=next_cursor`.
+
+- **Attachment flow**
+  - Client encrypts attachment with a per-file AES-GCM key; encrypt that key with the room key (or place it in the metadata encrypted under the room key). Upload ciphertext to object store or server and store a pointer in `messages.attachment_ref`.
+
+- **Presence & typing**
+  - Presence/typing should be ephemeral and not stored as persistent messages. Use a lightweight pub/sub path for transient events (broadcast to room members only).
+
+- **Auth & tokens**
+  - Use short-lived tokens (JWT or opaque tokens) issued after a login step; protect token issuance with correct password hashing (Argon2) and optional 2FA for production.
+
+- **TLS and server deployment**
+  - Use `ssl.SSLContext` to wrap sockets for TLS in the server and require `https`/WSS for web clients. For private deployments, you can optionally require client certificates (mTLS).
+  - Example systemd service unit (high-level): create a `securechat.service` that runs the server under a dedicated user and restarts on failure.
+
+- **Testing recommendations**
+  - Add unit tests for `db.py`, `crypto.py` and message serialization.
+  - Add integration tests that spin up a test server and create two clients to verify encryption, storage and broadcast.
+  - Use `pytest-asyncio` to test async server handlers and `sqlite` in-memory DB for speed.
+
+- **CI example (GitHub Actions)**
+  - A minimal workflow: `checkout`, `setup-python 3.11`, `pip install -r requirements.txt`, `pytest` — run on pushes and PRs.
+
+- **Packaging & run commands**
+  - Provide `pyproject.toml` with an entry point so users can install with `pip install .` and run `securechat-server` and `securechat-client` commands.
+  - Suggested environment variables: `CHAT_HOST`, `CHAT_PORT`, `CHAT_LOG_FILE`, `CHAT_DB_PATH`, `CHAT_TLS_CERT`, `CHAT_TLS_KEY`.
+
+**Expanded Priorities & Quick Roadmap**
+
+- Phase 0 — Safety & hygiene (days):
+  - Add tests, CI, and structured logging. Add graceful shutdown handlers and DB backups.
+
+- Phase 1 — Security (1–2 weeks):
+  - Add Argon2-based KDF, replace room-id key derivation, add TLS for transport, and add basic user auth (username/password + tokens).
+
+- Phase 2 — UX & reliability (1–2 weeks):
+  - Client reconnect/resume, message history pagination, better GUI error banners, presence and typing indicators.
+
+- Phase 3 — Rich features (2–4 weeks):
+  - Attachments (encrypted), reactions/replies, read receipts, message edits/deletes, desktop notifications.
+
+- Phase 4 — Hardening & deployment (2+ weeks):
+  - Load testing, metrics, packaging, systemd/unit files, and optional migration to a scaled architecture (broker + stateless servers).
+
+If you'd like, I can now:
+- create a `docs/IMPLEMENTATION.md` from this content,
+- or implement one of the Phase 1 items (Argon2 KDF + demo code) directly in the repo.
