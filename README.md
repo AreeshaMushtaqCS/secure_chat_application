@@ -112,3 +112,63 @@ Suggested roadmap
 3. Message history and search.
 4. File sharing and notifications.
 5. Packaging and deployment.
+
+**Detailed Feature Explanations**
+
+- **Stronger KDF with passphrase**: Replace the room-id-only key derivation with a password/passphrase-based KDF (Argon2 or PBKDF2/scrypt) that uses a per-room salt and adequate work factor to resist brute-force and rainbow-table attacks.
+
+- **Replace room-id-derived key with key exchange**: Implement an authenticated key agreement (e.g., X25519 + signatures or a Signal-style handshake) so clients derive a shared per-room symmetric key without embedding secrets in the room id.
+
+- **End-to-end key rotation per room session**: Periodically or on membership changes, derive a new symmetric key (re-key) and re-encrypt subsequent messages to reduce the window of exposure if a key is compromised.
+
+- **Encrypted attachments**: Encrypt file blobs client-side under the room key (or a per-file key encrypted by the room key). Server stores ciphertext and metadata only, never plaintext attachments.
+
+- **Store message metadata separately from ciphertext**: Keep searchable fields (timestamp, sender id, message id, content-type) in structured columns while storing the encrypted payload separately so you can index and query without exposing contents.
+
+- **Add authentication for users and the server**: Add user accounts or token-based auth (JWT/opaque tokens), password hashing (bcrypt/argon2), and server-side validation to prevent impersonation and misuse.
+
+- **Room membership rules & permissions**: Support roles (owner/moderator/member/guest), ACLs, and invite-only rooms so the server enforces who can read/post/edit messages.
+
+- **One-time invite links / expiring rooms / guest access**: Generate time-limited or single-use invite tokens for secure onboarding and automatic room deletion/archival for temporary rooms.
+
+- **Use TLS for transport**: Protect metadata and mitigate active MITM by wrapping sockets with TLS (`ssl.SSLContext`) and optionally require client certs or token auth for stronger guarantees.
+
+- **Server-side input validation**: Enforce message size limits, valid ID formats, and command whitelists to avoid injection, oversized payloads, and DB abuse.
+
+- **Rate limiting and abuse mitigation**: Apply per-IP/user rate limits, connection caps, and soft-bans to prevent spam and basic DoS attacks.
+
+- **Clean shutdown path**: Implement signal handlers and graceful shutdown to close listeners, notify clients, flush DB writes, and release locks to avoid stale state on restart.
+
+- **Retry logic and reconnect handling**: Client-side exponential backoff reconnects, automatic resync of missed messages on reconnect, and visible connection states in the UI.
+
+- **Message history retrieval and pagination**: Add server endpoints to page history (cursor or offset) with indexed queries so clients load history lazily and efficiently.
+
+- **Read receipts, edits and deletes**: Store receipt and edit/delete events as separate metadata so clients can update UI while server enforces permission checks and retains an audit trail if desired.
+
+- **Typing indicators & presence**: Send ephemeral presence events for typing and online/offline state so GUIs can show live member indicators without persisting these ephemeral events.
+
+- **Room member list with online/offline indicators**: Maintain per-room presence and a member list (avatar, display name, presence) so UIs can show who is in the room and their state.
+
+- **Desktop notifications**: Integrate system notifications for backgrounded clients to surface new messages; add per-room mute/priority controls.
+
+- **File and image sharing, message reactions and replies**: Support encrypted uploads, structured metadata for thumbnails, reactions, reply threading, and a UI to render them without altering original ciphertexts.
+
+- **Voice notes**: Record, compress, encrypt, upload, and stream short audio clips with client playback controls.
+
+- **Search inside room history**: Provide safe search over metadata; for full-text on encrypted content consider client-side indexing or searchable encryption techniques to avoid leaking plaintext to the server.
+
+- **Export chat history**: Allow users to export their decrypted history as plaintext or JSON locally after verification (warn about security implications of plaintext exports).
+
+- **Custom avatars and theming**: Per-user avatars and light/dark theme toggles for better UX and personalization.
+
+- **Mobile-friendly or web client later**: Reuse protocol and crypto primitives to build cross-platform clients (React Native, PWA, or a web client behind HTTPS) for broader access.
+
+- **Add tests and CI**: Unit tests for DB operations, encryption/decryption, and server commands plus integration tests for client-server flows to prevent regressions. Add CI to run tests automatically.
+
+- **Packaging and deployment**: Provide `pyproject.toml`/`setup.cfg` or a single installer script, and systemd/service examples for robust server deployment.
+
+- **Logging, observability, and monitoring**: Structured logs, metrics (Prometheus), and a health endpoint to monitor server status, active rooms, and error rates.
+
+- **Scalability notes**: For larger scale, consider splitting responsibilities (stateless server + Redis/ broker for pub/sub), sharding rooms, and offloading attachments to object storage.
+
+- If you want, I can also add a short "Implementation notes" section with recommended libraries, code snippets, and example API schemas for the highest-priority items.

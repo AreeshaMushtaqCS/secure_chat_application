@@ -1,0 +1,64 @@
+2026-05-29 01:16:18,530 INFO CLI mode started host=127.0.0.1 port=8888
+2026-05-29 01:16:18,531 INFO CLI sent cmd=create_room
+2026-05-29 01:16:18,545 INFO CLI created room room_id=roomlog name=Logger
+2026-05-29 01:16:18,545 INFO CLI sent cmd=join_room
+2026-05-29 01:16:18,548 INFO CLI sent cmd=send_message
+2026-05-29 01:16:18,549 INFO CLI queued message room_id=roomlog sender=Logger
+2026-05-29 01:16:18,549 INFO CLI receiver EOF room_id=roomlog
+2026-05-29 01:16:18,549 INFO CLI connection closed
+2026-05-29 01:17:06,955 INFO Connected host=127.0.0.1 port=8888
+2026-05-29 01:17:07,043 INFO Joined room mode=create name=N room_id=1
+2026-05-29 01:17:09,141 INFO Sent payload cmd=send_message
+2026-05-29 01:17:09,152 INFO Message queued room_id=1 sender=N
+2026-05-29 01:17:19,168 ERROR Receiver loop error room_id=1
+Traceback (most recent call last):
+  File "/home/dev/WorkSpace/SecureChatSystem/client.py", line 363, in _receiver_loop
+    line = self.client.reader.readline()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+2026-05-29 01:17:22,165 INFO Connected host=127.0.0.1 port=8888
+2026-05-29 01:17:22,235 INFO Joined room mode=join name=A room_id=1
+2026-05-29 01:17:25,951 INFO Sent payload cmd=send_message
+2026-05-29 01:17:25,956 INFO Message queued room_id=1 sender=A
+2026-05-29 01:17:34,898 INFO Sent payload cmd=send_message
+2026-05-29 01:17:34,907 INFO Message queued room_id=1 sender=N
+2026-05-29 01:17:40,570 INFO Sent payload cmd=send_message
+2026-05-29 01:17:40,575 INFO Message queued room_id=1 sender=A
+2026-05-29 01:17:48,063 INFO Sent payload cmd=send_message
+2026-05-29 01:17:48,073 INFO Message queued room_id=1 sender=N
+2026-05-29 01:17:51,466 INFO Sent payload cmd=send_message
+2026-05-29 01:17:51,470 INFO Message queued room_id=1 sender=N
+2026-05-29 01:17:56,380 INFO Sent payload cmd=send_message
+2026-05-29 01:17:56,390 INFO Message queued room_id=1 sender=N
+2026-05-29 01:18:06,407 ERROR Receiver loop error room_id=1
+Traceback (most recent call last):
+  File "/home/dev/WorkSpace/SecureChatSystem/client.py", line 363, in _receiver_loop
+    line = self.client.reader.readline()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+2026-05-29 01:19:12,762 INFO Connected host=127.0.0.1 port=8888
+2026-05-29 01:19:12,762 INFO Connection closed
+2026-05-29 01:20:15,579 INFO Connected host=127.0.0.1 port=8888
+2026-05-29 01:20:15,669 INFO Joined room mode=create name=Naqeeb room_id=5
+2026-05-29 01:20:24,203 INFO Sent payload cmd=send_message
+2026-05-29 01:20:24,208 INFO Message queued room_id=5 sender=Naqeeb
+2026-05-29 01:20:48,067 INFO Connected host=127.0.0.1 port=8888
+2026-05-29 01:20:48,140 INFO Joined room mode=join name=Areesha room_id=5
+2026-05-29 01:20:51,209 INFO Sent payload cmd=send_message
+2026-05-29 01:20:51,214 INFO Message queued room_id=5 sender=Areesha
+2026-05-29 01:20:56,568 INFO Sent payload cmd=send_message
+2026-05-29 01:20:56,573 INFO Message queued room_id=5 sender=Areesha
+2026-05-29 01:21:04,108 INFO Sent payload cmd=send_message
+2026-05-29 01:21:04,117 INFO Message queued room_id=5 sender=Naqeeb
+2026-05-29 01:21:39,325 INFO Connected host=127.0.0.1 port=8888
+2026-05-29 01:21:39,400 INFO Joined room mode=join name=Huma room_id=5
+2026-05-29 01:21:44,757 INFO Sent payload cmd=send_message
+2026-05-29 01:21:44,768 INFO Message queued room_id=5 sender=Huma
+2026-05-29 01:22:00,820 INFO Sent payload cmd=send_message
+2026-05-29 01:22:00,825 INFO Message queued room_id=5 sender=Naqeeb
