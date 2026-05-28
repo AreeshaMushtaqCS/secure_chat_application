@@ -247,3 +247,42 @@ Suggested roadmap
 If you'd like, I can now:
 - create a `docs/IMPLEMENTATION.md` from this content,
 - or implement one of the Phase 1 items (Argon2 KDF + demo code) directly in the repo.
+
+**Running across a local network (multiple PCs / same Wi‑Fi)**
+
+This project supports LAN usage so other machines on the same router/Wi‑Fi can connect without manually entering the server address.
+
+- Server:
+  - Start the server on the host machine. The server binds to all interfaces so it is reachable from other devices on the same network:
+
+```bash
+python server.py
+```
+
+- Client auto-discovery (no manual address required):
+  - `client.py` now performs a UDP broadcast discovery on startup to locate the server on the local network. If a server is found, the client connects automatically. If discovery fails, it falls back to `CHAT_HOST` / `CHAT_PORT` environment variables.
+  - From any other PC on the same Wi‑Fi, you can run the client (CLI or GUI) without editing code:
+
+```bash
+# CLI
+python client.py
+
+# GUI
+CHAT_GUI=1 python client.py
+```
+
+Packaging a standalone client (so other PCs do not need Python or source files):
+
+- Use `PyInstaller` to create a single-file executable for the target OS. Example (on Linux):
+
+```bash
+pip install pyinstaller
+pyinstaller --onefile client.py
+```
+
+- Distribute the produced binary from `dist/client` to other machines on the same network and run it directly; the client will perform discovery and connect to the server automatically.
+
+Notes & troubleshooting:
+- Discovery uses UDP broadcast on port `9999`. Ensure local firewalls allow UDP broadcasts and the host is on the same subnet.
+- If automatic discovery does not work (e.g., different subnets or restrictive network), set `CHAT_HOST` to the server machine's LAN IP (e.g., `192.168.1.42`) and `CHAT_PORT` if custom.
+- When running the server on cloud or across different networks, discovery is not suitable — use a known host address and TLS.

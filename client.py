@@ -23,6 +23,30 @@ HOST = os.environ.get('CHAT_HOST', '127.0.0.1')
 PORT = int(os.environ.get('CHAT_PORT', '8888'))
 ENABLE_GUI = os.environ.get('CHAT_GUI', '0').lower() in {'1', 'true', 'yes', 'on'}
 LOG_FILE = os.environ.get('CHAT_LOG_FILE', 'securechat-client.log')
+DISCOVERY_PORT = 9999
+DISCOVERY_MAGIC = b'SECURECHAT_DISCOVER'
+
+
+def discover_server(timeout=2.0):
+    """Broadcast a UDP discovery packet on the LAN and wait for a server reply.
+    Returns (host, port) or None if no server found.
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        sock.settimeout(timeout)
+        sock.sendto(DISCOVERY_MAGIC, ('255.255.255.255', DISCOVERY_PORT))
+        data, addr = sock.recvfrom(1024)
+        try:
+            obj = json.loads(data.decode())
+            return obj.get('host'), int(obj.get('port'))
+        except Exception:
+            return None
+    finally:
+        try:
+            sock.close()
+        except Exception:
+            pass
 
 
 def setup_logging():
@@ -59,6 +83,15 @@ class NetworkClient:
         self.connected = False
 
     def connect(self):
+        # attempt discovery on LAN first if host is default or set to 'auto'
+        if self.host in (None, '', '127.0.0.1', 'localhost'):
+            try:
+                discovered = discover_server(timeout=2.0)
+                if discovered:
+                    self.host, self.port = discovered
+                    LOGGER.info('Discovered server host=%s port=%s', self.host, self.port)
+            except Exception:
+                LOGGER.exception('Discovery failed')
         self.sock = socket.create_connection((self.host, self.port), timeout=10)
         self.sock.settimeout(None)
         self.reader = self.sock.makefile('rb')
@@ -510,7 +543,16 @@ def run_cli():
                 LOGGER.info('CLI received message room_id=%s sender=%s', room_id, sender)
 
     async def main():
-        reader, writer = await asyncio.open_connection(HOST, PORT)
+        # attempt discovery for CLI as well
+        use_host, use_port = HOST, PORT
+        try:
+            discovered = discover_server(timeout=2.0)
+            if discovered:
+                use_host, use_port = discovered
+                LOGGER.info('CLI discovered server host=%s port=%s', use_host, use_port)
+        except Exception:
+            LOGGER.exception('CLI discovery failed')
+        reader, writer = await asyncio.open_connection(use_host, use_port)
 
         print('Create or join a room? (create/join)')
         mode = input('> ').strip()

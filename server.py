@@ -1,6 +1,8 @@
 import asyncio
 import json
 import logging
+import socket
+import threading
 from logging.handlers import RotatingFileHandler
 from db import Database
 from datetime import datetime
@@ -9,6 +11,8 @@ rooms = {}  # room_id -> set of (writer, username)
 
 
 LOG_FILE = 'securechat-server.log'
+DISCOVERY_PORT = 9999
+DISCOVERY_MAGIC = b'SECURECHAT_DISCOVER'
 
 
 def setup_logging():
@@ -25,6 +29,8 @@ class Server:
     def __init__(self, db_path="chat.db"):
         self.db = Database(db_path)
         self.logger = setup_logging()
+        self._discovery_thread = None
+        self._discovery_stop = threading.Event()
 
     async def handle(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         username = None
@@ -123,14 +129,68 @@ class Server:
 
 async def main():
     server = Server()
-    s = await asyncio.start_server(server.handle, '127.0.0.1', 8888)
+    # bind to all interfaces so LAN clients can connect
+    s = await asyncio.start_server(server.handle, '0.0.0.0', 8888)
     addr = s.sockets[0].getsockname()
     print(f'Server listening on {addr}')
     server.logger.info('Server listening on %s', addr)
+    # start UDP discovery responder in a background thread
+    def _discovery_responder(tcp_port, stop_event):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            sock.bind(('', DISCOVERY_PORT))
+        except Exception:
+            server.logger.exception('Failed to bind discovery socket')
+            return
+        server.logger.info('Discovery responder listening on UDP %s', DISCOVERY_PORT)
+        while not stop_event.is_set():
+            try:
+                sock.settimeout(1.0)
+                data, addr = sock.recvfrom(1024)
+            except socket.timeout:
+                continue
+            except Exception:
+                break
+            if not data:
+                continue
+            if data.strip() != DISCOVERY_MAGIC:
+                continue
+            # determine a sensible local IP to reply with (best-effort)
+            client_ip = addr[0]
+            local_ip = None
+            try:
+                s2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s2.connect((client_ip, 80))
+                local_ip = s2.getsockname()[0]
+                s2.close()
+            except Exception:
+                try:
+                    local_ip = socket.gethostbyname(socket.gethostname())
+                except Exception:
+                    local_ip = '127.0.0.1'
+            reply = json.dumps({'host': local_ip, 'port': tcp_port}).encode()
+            try:
+                sock.sendto(reply, addr)
+            except Exception:
+                server.logger.exception('Failed to send discovery reply to %s', addr)
+        try:
+            sock.close()
+        except Exception:
+            pass
+
+    server._discovery_thread = threading.Thread(target=_discovery_responder, args=(addr[1], server._discovery_stop), daemon=True)
+    server._discovery_thread.start()
     async with s:
         try:
             await s.serve_forever()
         finally:
+            # stop discovery
+            server._discovery_stop.set()
+            try:
+                server._discovery_thread.join(timeout=2.0)
+            except Exception:
+                pass
             server.db.close()
             server.logger.info('Server stopped')
 
