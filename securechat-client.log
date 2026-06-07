@@ -62,3 +62,110 @@ TimeoutError: timed out
 2026-05-29 01:21:44,768 INFO Message queued room_id=5 sender=Huma
 2026-05-29 01:22:00,820 INFO Sent payload cmd=send_message
 2026-05-29 01:22:00,825 INFO Message queued room_id=5 sender=Naqeeb
+2026-05-29 01:54:38,238 INFO Connected host=127.0.0.1 port=8888
+2026-05-29 01:54:38,269 INFO Connection closed
+2026-05-29 01:54:48,258 INFO Connected host=127.0.0.1 port=8888
+2026-05-29 01:54:48,443 INFO Joined room mode=create name=areesha room_id=000
+2026-05-29 01:55:35,191 INFO Connected host=127.0.0.1 port=8888
+2026-05-29 01:55:35,326 INFO Joined room mode=join name=amasj room_id=000
+2026-05-29 01:55:43,180 INFO Sent payload cmd=send_message
+2026-05-29 01:55:43,196 INFO Message queued room_id=000 sender=amasj
+2026-05-29 02:09:25,358 ERROR Discovery failed
+Traceback (most recent call last):
+  File "C:\Users\My Device\Desktop\secure_chat_app\secure_chat_application\client.py", line 89, in connect
+    discovered = discover_server(timeout=2.0)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\My Device\Desktop\secure_chat_app\secure_chat_application\client.py", line 39, in discover_server
+    data, addr = sock.recvfrom(1024)
+                 ^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+2026-05-29 02:09:27,424 ERROR Failed to submit room mode=join name=AMASJ room_id=9
+Traceback (most recent call last):
+  File "C:\Users\My Device\Desktop\secure_chat_app\secure_chat_application\client.py", line 283, in _submit_room
+    self.client.connect()
+  File "C:\Users\My Device\Desktop\secure_chat_app\secure_chat_application\client.py", line 95, in connect
+    self.sock = socket.create_connection((self.host, self.port), timeout=10)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\My Device\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 865, in create_connection
+    raise exceptions[0]
+  File "C:\Users\My Device\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 850, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+2026-05-29 02:09:27,457 INFO Connection closed
+2026-05-29 02:10:45,330 ERROR Discovery failed
+Traceback (most recent call last):
+  File "C:\Users\My Device\Desktop\secure_chat_app\secure_chat_application\client.py", line 89, in connect
+    discovered = discover_server(timeout=2.0)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\My Device\Desktop\secure_chat_app\secure_chat_application\client.py", line 39, in discover_server
+    data, addr = sock.recvfrom(1024)
+                 ^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+2026-05-29 02:10:47,393 ERROR Failed to submit room mode=join name=AMASJ room_id=9
+Traceback (most recent call last):
+  File "C:\Users\My Device\Desktop\secure_chat_app\secure_chat_application\client.py", line 283, in _submit_room
+    self.client.connect()
+  File "C:\Users\My Device\Desktop\secure_chat_app\secure_chat_application\client.py", line 95, in connect
+    self.sock = socket.create_connection((self.host, self.port), timeout=10)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\My Device\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 865, in create_connection
+    raise exceptions[0]
+  File "C:\Users\My Device\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 850, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+2026-05-29 02:10:47,395 INFO Connection closed
+2026-05-29 02:11:26,252 ERROR Discovery failed
+Traceback (most recent call last):
+  File "C:\Users\My Device\Desktop\secure_chat_app\secure_chat_application\client.py", line 89, in connect
+    discovered = discover_server(timeout=2.0)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\My Device\Desktop\secure_chat_app\secure_chat_application\client.py", line 39, in discover_server
+    data, addr = sock.recvfrom(1024)
+                 ^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+2026-05-29 02:11:28,313 ERROR Failed to submit room mode=join name=amasj room_id=000
+Traceback (most recent call last):
+  File "C:\Users\My Device\Desktop\secure_chat_app\secure_chat_application\client.py", line 283, in _submit_room
+    self.client.connect()
+  File "C:\Users\My Device\Desktop\secure_chat_app\secure_chat_application\client.py", line 95, in connect
+    self.sock = socket.create_connection((self.host, self.port), timeout=10)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\My Device\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 865, in create_connection
+    raise exceptions[0]
+  File "C:\Users\My Device\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 850, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+2026-05-29 02:11:28,314 INFO Connection closed
+2026-05-29 02:14:09,915 INFO Connected host=192.168.100.182 port=8888
+2026-05-29 02:14:09,992 INFO Joined room mode=join name=AMASJ room_id=9
+2026-05-29 02:14:20,684 INFO Sent payload cmd=send_message
+2026-05-29 02:14:20,684 INFO Message queued room_id=9 sender=AMASJ
+2026-06-07 20:20:34,116 INFO CLI mode started host=127.0.0.1 port=8888
+2026-06-07 20:20:34,117 INFO CLI discovered server host=172.26.32.1 port=8888
+2026-06-07 20:20:58,398 INFO CLI sent cmd=join_room
+2026-06-07 20:20:58,403 WARNING CLI join failed because room missing room_id=
+2026-06-07 20:21:08,268 INFO CLI mode started host=127.0.0.1 port=8888
+2026-06-07 20:21:08,269 INFO CLI discovered server host=192.168.56.1 port=8888
+2026-06-07 20:22:02,717 INFO Discovered server host=192.168.56.1 port=8888
+2026-06-07 20:22:02,730 INFO Connected host=192.168.56.1 port=8888
+2026-06-07 20:22:02,730 INFO Connection closed
+2026-06-07 20:22:07,335 INFO Discovered server host=192.168.56.1 port=8888
+2026-06-07 20:22:07,335 INFO Connected host=192.168.56.1 port=8888
+2026-06-07 20:22:07,384 INFO Joined room mode=join name=areesga room_id=1234
+2026-06-07 20:49:57,915 INFO Discovered server host=192.168.56.1 port=8888
+2026-06-07 20:49:57,942 INFO Connected host=192.168.56.1 port=8888
+2026-06-07 20:58:06,076 INFO Discovered server host=192.168.56.1 port=8888
+2026-06-07 20:58:06,110 INFO Connected host=192.168.56.1 port=8888
+2026-06-07 21:11:06,104 INFO Discovered server host=192.168.56.1 port=8888
+2026-06-07 21:11:06,119 INFO Connected host=192.168.56.1 port=8888
+2026-06-07 21:15:40,779 INFO Discovered server host=192.168.56.1 port=8888
+2026-06-07 21:15:40,824 INFO Connected host=192.168.56.1 port=8888
+2026-06-07 21:25:50,045 INFO Connected to 127.0.0.1:8888
+2026-06-07 21:25:50,045 INFO Sent: create_room
+2026-06-07 21:25:50,068 INFO Sent: join_room
+2026-06-07 21:25:57,957 INFO Sent: send_message
+2026-06-07 21:26:02,961 INFO Sent: leave_room
+2026-06-07 21:46:05,108 INFO Connected to 127.0.0.1:8888
+2026-06-07 21:46:05,139 INFO Sent: create_room
+2026-06-07 21:50:14,688 INFO Connected to 127.0.0.1:8888
+2026-06-07 21:50:14,690 INFO Sent: create_room
